@@ -1,0 +1,21 @@
+import {{MODEL_NAME}}Router from './{{MODULE_NAME}}-router'
+import { Module } from "@pablo-dav/modular-api";
+import { PrismaClient } from '@prisma/client'
+
+export default class {{MODEL_NAME}}Module implements Module {
+  public readonly moduleName: string
+  public readonly router: {{MODEL_NAME}}Router
+  public isPublic: boolean
+
+  constructor(moduleName: string, isPublic: boolean, prismaClient: PrismaClient) {
+    this.moduleName = moduleName
+    this.isPublic = isPublic
+
+    this.router = new {{MODEL_NAME}}Router(prismaClient)
+    this.loadRoutes()
+  }
+
+  private loadRoutes() {
+    this.router.index().show().search().store().update().delete()
+  }
+}

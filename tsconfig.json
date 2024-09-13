@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "useDefineForClassFields": true,
+    "module": "CommonJS",
+    "lib": ["ES5"],
+    "outDir": "dist",
+    "declaration": true,
+    "moduleResolution": "Node",
+    "strict": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "paths": {
+      "~/": [
+        "./src/"
+      ]
+    }
+  },
+  "include": ["src"]
+}

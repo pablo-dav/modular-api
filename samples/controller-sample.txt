@@ -1,0 +1,83 @@
+import { PrismaClient } from '@prisma/client'
+import { Request, Response } from 'express'
+import { onError, onSuccess } from '@pablo-dav/modular-api'
+import {{MODEL_NAME}}Service from './{{MODULE_NAME}}-service'
+
+export default class {{MODEL_NAME}}Controller {
+  private readonly service: {{MODEL_NAME}}Service 
+
+  constructor(public prismaClient: PrismaClient) {
+    this.service = new {{MODEL_NAME}}Service(prismaClient)
+  }
+
+  public async index(request: Request, response: Response) {
+    try {
+      const take = request.query.take?.toString();
+      const page = request.query.page?.toString();
+
+      const {{MODULE_NAME}}s = await this.service.fetchAll({
+        take,
+        page,
+        includes: request.query.includes?.toString(),
+      })
+
+      return onSuccess(response, 200, {{MODULE_NAME}}s)
+    } catch (error: any) {
+      return onError(response, error)
+    }
+  }
+
+  public async show(request: Request, response: Response) {
+    try {
+      const {{MODULE_NAME}}Id = parseInt(request.params.id)
+
+      const {{MODULE_NAME}} = await this.service.fetchById({{MODULE_NAME}}Id, request.query.includes?.toString())
+
+      return onSuccess(response, 200, {{MODULE_NAME}})
+    } catch (error: any) {
+      return onError(response, error)
+    }
+  }
+
+  public async search(request: Request, response: Response) {
+    try {
+      const {{MODULE_NAME}}s = await this.service.search(request.body);
+
+      return onSuccess(response, 200, {{MODULE_NAME}}s);
+    } catch (error: any) {
+      return onError(response, error);
+    }
+  }
+
+  public async store(request: Request, response: Response) {
+    try {
+      const {{MODULE_NAME}} = await this.service.store(request.body)
+      
+      return onSuccess(response, 201, {{MODULE_NAME}})
+    } catch (error: any) {
+      return onError(response, error)
+    }
+  }
+
+  public async update(request: Request, response: Response) {
+    try {
+      const {{MODULE_NAME}}Id = parseInt(request.params.id)
+      const {{MODULE_NAME}} = await this.service.update({{MODULE_NAME}}Id, request.body)
+      
+      return onSuccess(response, 200, {{MODULE_NAME}})
+    } catch (error: any) {
+      return onError(response, error)
+    }
+  }
+
+  public async destroy(request: Request, response: Response) {
+    try {
+      const {{MODULE_NAME}}Id = parseInt(request.params.id)
+      const {{MODULE_NAME}} = await this.service.destroy({{MODULE_NAME}}Id)
+
+      return onSuccess(response, 200, {{MODULE_NAME}})
+    } catch (error: any) {
+      return onError(response, error)
+    }
+  }
+}

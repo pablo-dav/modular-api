@@ -1,0 +1,80 @@
+import { PrismaClient } from '@prisma/client'
+import {{MODEL_NAME}}Repository from './{{MODULE_NAME}}-repository'
+import { {{MODEL_NAME}}SavePayload, {{MODEL_NAME}}UpdatePayload } from './{{MODULE_NAME}}-interfaces'
+import { NotFoundError, Global, SearchPayload } from "@pablo-dav/modular-api";
+
+export default class {{MODEL_NAME}}Service {
+  private readonly {{MODULE_NAME}}Repository: {{MODEL_NAME}}Repository 
+  private readonly _global: Global;
+
+  constructor(public prismaClient: PrismaClient) {
+    this.{{MODULE_NAME}}Repository = new {{MODEL_NAME}}Repository(prismaClient)
+    this._global = new Global();
+  }
+
+  async fetchAll(query: {
+      take?: string;
+      page?: string;
+      includes?: string;
+    }) {
+    const relations = this._global.includeParamsRelations(query.includes);
+    
+    const {{MODULE_NAME}}s = await this.{{MODULE_NAME}}Repository.all(
+      { take: query.take, page: query.page },
+      relations
+    )
+
+     if ({{MODULE_NAME}}s && {{MODULE_NAME}}s[0].length == 0)
+      throw new NotFoundError("Nenhum {{MODULE_NAME}} foi encontrado!");
+
+   return {
+      {{MODULE_NAME}}s: {{MODULE_NAME}}s[0],
+      pages: Math.ceil(
+        {{MODULE_NAME}}s[1] / (query.take ? parseInt(query.take) : 10)
+      ),
+    };
+  }
+
+  async fetchById({{MODULE_NAME}}Id: number, includes?: string) {
+    const relations = this._global.includeParamsRelations(includes);
+
+    const {{MODULE_NAME}} = await this.{{MODULE_NAME}}Repository.get({{MODULE_NAME}}Id, relations)
+    if (!{{MODULE_NAME}}) throw new NotFoundError("{{MODEL_NAME}} não foi encontrado!");
+    return { {{MODULE_NAME}} }
+  }
+
+  async search(payload: SearchPayload) {
+     const relations = this._global.includeParamsRelations(payload.includes);
+
+    const filters = this._global.generateFilters(payload);
+    const {{MODULE_NAME}}s = await this.{{MODULE_NAME}}Repository.search(
+      filters,
+      relations
+    );
+
+    if ({{MODULE_NAME}}s && {{MODULE_NAME}}s[0].length == 0)
+      throw new NotFoundError("Nenhum {{MODULE_NAME}} foi encontrado!");
+
+    return {
+      {{MODULE_NAME}}s: {{MODULE_NAME}}s[0],
+      pages: Math.ceil(
+        {{MODULE_NAME}}s[1] / (payload.pagination ? payload.pagination.take : 10)
+      ),
+    };
+  }
+
+  async store(payload: {{MODEL_NAME}}SavePayload) {
+    const {{MODULE_NAME}} = await this.{{MODULE_NAME}}Repository.save(payload)
+    return { {{MODULE_NAME}} }
+  }
+
+  async update({{MODULE_NAME}}Id: number, payload: {{MODEL_NAME}}UpdatePayload) {
+    const {{MODULE_NAME}} = await this.{{MODULE_NAME}}Repository.update({{MODULE_NAME}}Id, payload)
+    return { {{MODULE_NAME}} }
+  }
+
+  async destroy({{MODULE_NAME}}Id: number) {
+    const {{MODULE_NAME}} = await this.{{MODULE_NAME}}Repository.delete({{MODULE_NAME}}Id)
+    return { {{MODULE_NAME}} }
+  }
+}

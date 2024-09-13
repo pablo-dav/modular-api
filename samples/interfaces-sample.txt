@@ -1,0 +1,26 @@
+export interface {{MODEL_NAME}}Schema {
+
+}
+
+// Fetch
+export interface {{MODEL_NAME}}FetchPayload {
+    include?: {
+        
+    }
+}
+
+export interface {{MODEL_NAME}}FetchResponseDTO {
+  
+}
+
+// Save
+export interface {{MODEL_NAME}}SavePayload {
+
+}
+
+// Update
+export interface {{MODEL_NAME}}UpdatePayload {
+
+}
+
+// Destroy

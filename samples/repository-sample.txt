@@ -1,0 +1,59 @@
+import { PrismaClient, {{MODEL_NAME}} } from '@prisma/client'
+import { {{MODEL_NAME}}SavePayload, {{MODEL_NAME}}UpdatePayload, {{MODEL_NAME}}FetchPayload, {{MODEL_NAME}}FetchResponseDTO } from './{{MODULE_NAME}}-interfaces'
+import { SearchDatabase, SearchGetPayload } from "@pablo-dav/modular-api";
+
+export default class {{MODEL_NAME}}Repository {
+  constructor(private readonly client: PrismaClient) {}
+
+  public all({ take = "10", page = "1" }: SearchGetPayload,
+    relations: {{MODEL_NAME}}FetchPayload): Promise<[Array<{{MODEL_NAME}} & {{MODEL_NAME}}FetchResponseDTO>, number]> {
+    return this.client.$transaction([
+      this.client.{{MODULE_NAME}}.findMany({
+        take: parseInt(take) - 1,
+        skip: (parseInt(page) - 1) * (parseInt(take) - 1),
+        ...relations,
+      }),
+      this.client.{{MODULE_NAME}}.count(),
+    ]);
+  }
+
+  public get(id: number, relations: {{MODEL_NAME}}FetchPayload): Promise<{{MODEL_NAME}} & {{MODEL_NAME}}FetchResponseDTO | null> {
+    return this.client.{{MODULE_NAME}}.findFirst({
+      where: { id },
+      ...relations
+    })
+  }
+
+  public search(
+    filters: SearchDatabase,
+    relations: {{MODEL_NAME}}FetchPayload
+  ): Promise<[Array<{{MODEL_NAME}} & {{MODEL_NAME}}FetchResponseDTO>, number]> {
+    return this.client.$transaction([
+      this.client.{{MODULE_NAME}}.findMany({
+        ...filters,
+        ...relations,
+      }),
+      this.client.{{MODULE_NAME}}.count({ where: filters.where }),
+    ]);
+  }
+
+  // change data type to {{MODEL_NAME}}SavePayload after finish fields update
+  public save(data: any): Promise<{{MODEL_NAME}}> { 
+    return this.client.{{MODULE_NAME}}.create({
+      data,
+    })
+  }
+
+  public update(id: number, data: {{MODEL_NAME}}UpdatePayload): Promise<{{MODEL_NAME}}> {
+    return this.client.{{MODULE_NAME}}.update({
+      where: { id },
+      data,
+    })
+  }
+
+  public delete(id: number): Promise<{{MODEL_NAME}}> {
+    return this.client.{{MODULE_NAME}}.delete({
+      where: { id },
+    })
+  }
+}
